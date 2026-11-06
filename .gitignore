@@ -1,0 +1,28 @@
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+publish/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test data (чтобы не выкладывать сертификаты)
+*.sig
+*.pdf
+*.p7s
+
+№ Не выкладывать перменные
+*.env
+*.json
+

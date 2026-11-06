@@ -1,0 +1,313 @@
+﻿<Window x:Class="MergeSign.Gui.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MergeSign.Gui"
+        mc:Ignorable="d"
+        Title="MergeSign" Height="500" Width="820"
+        Icon="app.ico">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Выход" Click="ExitMenuItem_Click" />
+            </MenuItem>
+            <MenuItem Header="Справка">
+                <MenuItem Header="О программе" Click="AboutMenuItem_Click" />
+                <MenuItem Header="Лицензия" Click="LicenseMenuItem_Click" />
+                <MenuItem Header="Проверка безопасности"
+                          Click="SecurityMenuItem_Click" />
+            </MenuItem>
+        </Menu>
+
+        <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Button x:Name="CheckSignatureButton"
+                        Content="Добавить .sig"
+                        Padding="8,4"
+                        Click="CheckSignatureButton_Click" />
+
+                <Button x:Name="ClearSignaturesButton"
+                        Content="Очистить список"
+                        Margin="8,0,0,0"
+                        Padding="8,4"
+                        Click="ClearSignaturesButton_Click" />
+
+                <Button x:Name="ExtractSignatureButton"
+                        Content="Извлечь подпись"
+                        Margin="8,0,0,0"
+                        Padding="8,4"
+                        Click="ExtractSignatureButton_Click" />
+
+                <Button x:Name="SplitSignatureButton"
+                        Content="Разделить подписи"
+                        Margin="8,0,0,0"
+                        Padding="8,4"
+                        Click="SplitSignatureButton_Click" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                <Button x:Name="CheckBindingButton"
+                        Content="Проверить привязку к PDF"
+                        Padding="12,6"
+                        FontWeight="SemiBold"
+                        Background="#FFEAF3FF"
+                        BorderBrush="#FF0078D7"
+                        Foreground="#FF004E8C"
+                        IsEnabled="False"
+                        Click="CheckBindingButton_Click" />
+
+                <Button x:Name="MergeSignaturesButton"
+                        Content="Объединить выбранные"
+                        Margin="8,0,0,0"
+                        Padding="12,6"
+                        FontWeight="SemiBold"
+                        Background="#FF0078D7"
+                        Foreground="White"
+                        IsEnabled="False"
+                        Click="MergeSignaturesButton_Click" />
+            </StackPanel>
+        </StackPanel>
+
+        <Grid Grid.Row="1" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="280" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition x:Name="DetailsColumn" Width="0" />
+            </Grid.ColumnDefinitions>
+
+            <ListBox x:Name="SignersListBox"
+                     Grid.Column="0"
+                     SelectionChanged="SignersListBox_SelectionChanged"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border BorderBrush="#FFE0E0E0"
+                                BorderThickness="0,0,0,1"
+                                Padding="8,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <CheckBox Grid.Column="0"
+                                          Margin="0,2,10,0"
+                                          VerticalAlignment="Top"
+                                          IsChecked="{Binding IsChecked, Mode=TwoWay}"
+                                          Click="SignerCheckBox_Click" />
+
+                                <StackPanel Grid.Column="1">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Grid.Column="0"
+                                                   Text="{Binding OwnerName}"
+                                                   ToolTip="{Binding OwnerName}"
+                                                   FontWeight="SemiBold"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   VerticalAlignment="Center" />
+
+                                        <Button Grid.Column="1"
+                                                Content="Подробнее"
+                                                Margin="10,0,0,0"
+                                                Padding="8,2"
+                                                FontSize="11"
+                                                VerticalAlignment="Center"
+                                                Click="DetailsButton_Click" />
+                                    </Grid>
+
+                                    <TextBlock Margin="0,2,0,0"
+                                               FontSize="11"
+                                               Foreground="#FF666666"
+                                               TextTrimming="CharacterEllipsis"
+                                               ToolTip="{Binding Issuer}">
+                                        <Run Text="Издатель: " />
+                                        <Run Text="{Binding Issuer, Mode=OneWay}" />
+                                    </TextBlock>
+
+                                    <TextBlock Text="{Binding ValidityText}"
+                                               Margin="0,4,0,0"
+                                               Foreground="#FF555555" />
+
+                                    <TextBlock Text="{Binding BindingStatusText}"
+                                               Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <GridSplitter x:Name="DetailsSplitter"
+                          Grid.Column="1"
+                          Width="6"
+                          Visibility="Collapsed"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Stretch"
+                          ResizeBehavior="PreviousAndNext"
+                          ResizeDirection="Columns"
+                          Background="#FFE0E0E0" />
+
+            <Border x:Name="DetailsPanel"
+                    Grid.Column="2"
+                    Visibility="Collapsed"
+                    BorderBrush="#FFE0E0E0"
+                    BorderThickness="1"
+                    Background="#FFF7F9FC"
+                    Padding="12"
+                    DataContext="{Binding SelectedItem, ElementName=SignersListBox}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right"
+                                    Content="×"
+                                    Width="24"
+                                    Height="24"
+                                    Padding="0"
+                                    FontSize="14"
+                                    Click="CloseDetailsButton_Click" />
+
+                            <TextBlock Text="Сведения о сертификате"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       VerticalAlignment="Center" />
+                        </DockPanel>
+
+                        <Grid Margin="0,12,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0"
+                                       Text="Subject:"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,10,8" />
+                            <TextBlock Grid.Row="0" Grid.Column="1"
+                                       Text="{Binding Subject}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,8" />
+
+                            <TextBlock Grid.Row="1" Grid.Column="0"
+                                       Text="Издатель:"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,10,8" />
+                            <TextBlock Grid.Row="1" Grid.Column="1"
+                                       Text="{Binding Issuer}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,0,0,8" />
+
+                            <TextBlock Grid.Row="2" Grid.Column="0"
+                                       Text="Серийный номер:"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,10,8" />
+                            <TextBlock Grid.Row="2" Grid.Column="1"
+                                       Text="{Binding SerialNumber}"
+                                       TextWrapping="Wrap"
+                                       FontFamily="Consolas"
+                                       Margin="0,0,0,8" />
+
+                            <TextBlock Grid.Row="3" Grid.Column="0"
+                                       Text="Действителен с:"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,10,8" />
+                            <TextBlock Grid.Row="3" Grid.Column="1"
+                                       Text="{Binding NotBefore, StringFormat={}{0:dd.MM.yyyy HH:mm:ss}}"
+                                       Margin="0,0,0,8" />
+
+                            <TextBlock Grid.Row="4" Grid.Column="0"
+                                       Text="Действителен по:"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,10,8" />
+                            <TextBlock Grid.Row="4" Grid.Column="1"
+                                       Text="{Binding NotAfter, StringFormat={}{0:dd.MM.yyyy HH:mm:ss}}"
+                                       Margin="0,0,0,8" />
+
+                            <TextBlock Grid.Row="5" Grid.Column="0"
+                                       Text="Отпечаток:"
+                                       FontWeight="SemiBold"
+                                       Margin="0,0,10,0" />
+                            <TextBlock Grid.Row="5" Grid.Column="1"
+                                       Text="{Binding Thumbprint}"
+                                       TextWrapping="Wrap"
+                                       FontFamily="Consolas" />
+                        </Grid>
+
+                        <TextBlock Text="Сырые данные"
+                                   FontWeight="SemiBold"
+                                   Margin="0,14,0,4" />
+
+                        <TextBox x:Name="DetailsRawTextBox"
+                                 Text="{Binding DetailedInfo, Mode=OneWay}"
+                                 IsReadOnly="True"
+                                 IsReadOnlyCaretVisible="True"
+                                 TextWrapping="NoWrap"
+                                 AcceptsReturn="True"
+                                 FontFamily="Consolas"
+                                 FontSize="11"
+                                 Height="160"
+                                 VerticalScrollBarVisibility="Auto"
+                                 HorizontalScrollBarVisibility="Auto" />
+
+                        <Button Content="Копировать сырые данные"
+                                HorizontalAlignment="Left"
+                                Margin="0,8,0,0"
+                                Padding="8,4"
+                                Click="CopyRawDetailsButton_Click" />
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+
+        <StatusBar Grid.Row="2" Margin="0,12,0,0">
+            <StatusBarItem HorizontalContentAlignment="Stretch">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock x:Name="SummaryTextBlock"
+                                   Grid.Column="0"
+                                   TextWrapping="Wrap" />
+
+                        <TextBlock x:Name="StatusMessageTextBlock"
+                                   Grid.Column="1"
+                                   Margin="16,0,0,0"
+                                   Foreground="#FF666666"
+                                   VerticalAlignment="Center" />
+                    </Grid>
+
+                    <TextBlock x:Name="ProviderStatusTextBlock"
+                               Margin="0,4,0,0"
+                               FontSize="11"
+                               Foreground="#FF666666"
+                               TextTrimming="CharacterEllipsis"
+                               Text="Криптопровайдер: проверка..." />
+                </StackPanel>
+            </StatusBarItem>
+        </StatusBar>
+        </Grid>
+    </DockPanel>
+</Window>
